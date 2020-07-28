@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ethereum.dao.AgentInfoDao">
+
+    <resultMap id="AgentInfoMap" type="AgentInfo">
+        <id property="id" column="id"/>
+        <result property="deviceName" column="device_name"/>
+        <result property="deviceMac" column="device_mac"/>
+        <result property="deviceUid" column="device_uid"/>
+        <result property="manufacture" column="manufacture"/>
+        <result property="address" column="address"/>
+        <result property="status" column="status"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <sql id="selectField">
+        id ,
+        device_name,
+        device_mac,
+        device_uid,
+        manufacture,
+        address,
+        status,
+        create_time,
+        update_time
+    </sql>
+
+    <sql id="insertColumn">
+        <trim suffixOverrides=",">
+            <if test="deviceName!=null">device_name,</if>
+            <if test="deviceMac!=null">device_mac,</if>
+            <if test="deviceUid!=null">device_uid,</if>
+            <if test="manufacture!=null">manufacture,</if>
+            <if test="address!=null">address,</if>
+            <if test="status!=null">status,</if>
+            <if test="createTime!=null">create_time,</if>
+            <if test="updateTime!=null">update_time,</if>
+        </trim>
+    </sql>
+    <sql id="insertValue">
+        <trim suffixOverrides=",">
+            <if test="deviceName!=null">#{deviceName},</if>
+            <if test="deviceMac!=null">#{deviceMac},</if>
+            <if test="deviceUid!=null">#{deviceUid},</if>
+            <if test="manufacture!=null">#{manufacture},</if>
+            <if test="address!=null">#{address},</if>
+            <if test="status!=null">#{status},</if>
+            <if test="createTime!=null">#{createTime},</if>
+            <if test="updateTime!=null">#{updateTime},</if>
+        </trim>
+    </sql>
+
+    <insert id="insert" parameterType="AgentInfo">
+        INSERT INTO agent_info
+        (<include refid="insertColumn"/>)
+        values
+        (<include refid="insertValue"/>)
+    </insert>
+
+    <select id="selectAll" resultMap="AgentInfoMap">
+        SELECT
+        <include refid="selectField"/>
+        FROM agent_info
+        <where>
+            <if test="status !=null and ( status==0 or status==1 )">
+                status=#{status}
+            </if>
+        </where>
+        order by id desc
+    </select>
+
+    <select id="selectFilter" parameterType="AgentInfo" resultMap="AgentInfoMap">
+        SELECT
+        <include refid="selectField"/>
+        FROM agent_info
+        <where>
+            <trim suffixOverrides="and">
+                <if test="id!=null">agent_info.id=#{id} and</if>
+                <if test="deviceName!=null">agent_info.device_name like ${deviceName} and</if>
+                <if test="deviceMac!=null">agent_info.device_mac like ${deviceMac} and</if>
+                <if test="deviceUid!=null">agent_info.device_uid like ${deviceUid} and</if>
+                <if test="manufacture!=null">agent_info.manufacture like ${manufacture} and</if>
+                <if test="status!=null">agent_info.status=#{status} and</if>
+            </trim>
+        </where>
+        order by agent_info.id desc
+    </select>
+
+    <select id="selectById" resultMap="AgentInfoMap">
+        SELECT
+        <include refid="selectField"/>
+        FROM agent_info
+        where id=#{id}
+    </select>
+
+    <select id="selectByName" resultMap="AgentInfoMap">
+        SELECT
+        <include refid="selectField"/>
+        FROM agent_info
+        where device_name=#{deviceName}
+    </select>
+
+    <select id="selectByMac" resultMap="AgentInfoMap">
+        SELECT
+        <include refid="selectField"/>
+        FROM agent_info
+        where device_mac=#{deviceMac}
+    </select>
+
+    <update id="update" parameterType="AgentInfo">
+        UPDATE agent_info
+        SET
+        <trim suffixOverrides=",">
+            <if test="deviceName!=null">device_name=#{deviceName},</if>
+            <if test="deviceMac!=null">device_mac=#{deviceMac},</if>
+            <if test="deviceUid!=null">device_uid=#{deviceUid},</if>
+            <if test="manufacture!=null">manufacture=#{manufacture},</if>
+            <if test="address!=null">address=#{address},</if>
+            <if test="status!=null">status=#{status},</if>
+        </trim>
+        WHERE id=#{id}
+    </update>
+
+    <delete id="delete" parameterType="int">
+        DELETE FROM
+        agent_info
+        WHERE id=#{id}
+    </delete>
+
+</mapper>

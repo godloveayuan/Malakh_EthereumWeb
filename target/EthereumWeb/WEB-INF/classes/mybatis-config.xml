@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+    <settings>
+        <!-- 使用jdbc的getGeneratedKeys获取数据库自增主键值 -->
+        <setting name="useGeneratedKeys" value="true"/>
+
+        <!-- 开启驼峰命名转换:Table{create_time} -> Entity{createTime} -->
+        <setting name="mapUnderscoreToCamelCase" value="true"/>
+
+        <!-- 打印SQL语句 -->
+<!--    <setting name="logImpl" value="STDOUT_LOGGING"/>-->
+    </settings>
+
+    <!-- 类别名，避免使用完整类名 -->
+    <typeAliases>
+        <typeAlias alias="DeviceInfo" type="com.ethereum.bean.DeviceInfo"/>
+        <typeAlias alias="AgentInfo" type="com.ethereum.bean.AgentInfo"/>
+        <typeAlias alias="ContractInfo" type="com.ethereum.bean.ContractInfo"/>
+        <typeAlias alias="SecurityRule" type="com.ethereum.bean.SecurityRule"/>
+        <typeAlias alias="PunishInfo" type="com.ethereum.bean.PunishInfo"/>
+        <typeAlias alias="AccessLog" type="com.ethereum.bean.AccessLog"/>
+        <typeAlias alias="UserInfo" type="com.ethereum.bean.UserInfo"/>
+    </typeAliases>
+
+    <plugins>
+        <plugin interceptor="com.github.pagehelper.PageInterceptor">
+            <!--分页参数合理化, 自动转化非法参数-->
+            <property name="reasonable" value="true"/>
+        </plugin>
+    </plugins>
+</configuration>

@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="war" name="EthereumWeb:war">
+    <output-path>$PROJECT_DIR$/target</output-path>
+    <root id="archive" name="EthereumWeb.war">
+      <element id="artifact" artifact-name="EthereumWeb:war exploded" />
+    </root>
+  </artifact>
+</component>

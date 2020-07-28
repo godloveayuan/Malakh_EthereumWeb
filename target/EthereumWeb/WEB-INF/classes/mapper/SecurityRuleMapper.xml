@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ethereum.dao.SecurityRuleDao">
+
+    <resultMap id="SecurityRuleMap" type="SecurityRule">
+        <id property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="type" column="type"/>
+        <result property="checkCount" column="check_count"/>
+        <result property="checkTimeNumber" column="check_time_number"/>
+        <result property="checkTimeUnit" column="check_time_unit"/>
+        <result property="punishNumber" column="punish_number"/>
+        <result property="punishUnit" column="punish_unit"/>
+        <result property="kickOut" column="kick_out"/>
+        <result property="status" column="status"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <sql id="selectField">
+        id ,
+        name,
+        type,
+        check_count,
+        check_time_number,
+        check_time_unit,
+        punish_number,
+        punish_unit,
+        kick_out,
+        status,
+        create_time,
+        update_time
+    </sql>
+
+    <sql id="insertColumn">
+        <trim suffixOverrides=",">
+            <if test="name!=null">name,</if>
+            <if test="type!=null">type,</if>
+            <if test="checkCount!=null">check_count,</if>
+            <if test="checkTimeNumber!=null">check_time_number,</if>
+            <if test="checkTimeUnit!=null">check_time_unit,</if>
+            <if test="punishNumber!=null">punish_number,</if>
+            <if test="punishUnit!=null">punish_unit,</if>
+            <if test="kickOut!=null">kick_out,</if>
+            <if test="status!=null">status,</if>
+            <if test="createTime!=null">create_time,</if>
+            <if test="updateTime!=null">update_time,</if>
+        </trim>
+    </sql>
+    <sql id="insertValue">
+        <trim suffixOverrides=",">
+            <if test="name!=null">#{name},</if>
+            <if test="type!=null">#{type},</if>
+            <if test="checkCount!=null">#{checkCount},</if>
+            <if test="checkTimeNumber!=null">#{checkTimeNumber},</if>
+            <if test="checkTimeUnit!=null">#{checkTimeUnit},</if>
+            <if test="punishNumber!=null">#{punishNumber},</if>
+            <if test="punishUnit!=null">#{punishUnit},</if>
+            <if test="kickOut!=null">#{kickOut},</if>
+            <if test="status!=null">#{status},</if>
+            <if test="createTime!=null">#{createTime},</if>
+            <if test="updateTime!=null">#{updateTime},</if>
+        </trim>
+    </sql>
+
+    <insert id="insert" parameterType="SecurityRule">
+        INSERT INTO security_rule
+        (<include refid="insertColumn"/>)
+        values
+        (<include refid="insertValue"/>)
+    </insert>
+
+    <select id="selectAll" resultMap="SecurityRuleMap">
+        SELECT
+        <include refid="selectField"/>
+        FROM security_rule
+        <where>
+            <if test="status !=null and ( status==0 or status==1 )">
+                status=#{status}
+            </if>
+        </where>
+        order by id desc
+    </select>
+
+    <select id="selectFilter" parameterType="SecurityRule" resultMap="SecurityRuleMap">
+        SELECT
+        <include refid="selectField"/>
+        FROM security_rule
+        <where>
+            <trim suffixOverrides="and">
+                <if test="id!=null">id=#{id} and</if>
+                <if test="type!=null">type=#{type} and</if>
+                <if test="name!=null">name like ${name} and</if>
+                <if test="kickOut!=null">kick_out=#{kickOut} and</if>
+                <if test="status!=null">status=#{status} and</if>
+            </trim>
+        </where>
+        order by id desc
+    </select>
+
+    <select id="selectByUnique" resultMap="SecurityRuleMap">
+        SELECT
+        <include refid="selectField"/>
+        FROM security_rule
+        where type=#{type} and kick_out=#{kickOut}
+    </select>
+
+    <select id="selectByRuleType" resultMap="SecurityRuleMap">
+        SELECT
+        <include refid="selectField"/>
+        FROM security_rule
+        where type=#{type} and status=1
+    </select>
+
+    <select id="selectById" resultMap="SecurityRuleMap">
+        SELECT
+        <include refid="selectField"/>
+        FROM security_rule
+        where id=#{id}
+    </select>
+
+    <select id="selectByName" resultMap="SecurityRuleMap">
+        SELECT
+        <include refid="selectField"/>
+        FROM security_rule
+        where name=#{name}
+    </select>
+
+    <update id="update" parameterType="SecurityRule">
+        UPDATE security_rule
+        SET
+        <trim suffixOverrides=",">
+            <if test="name!=null">name=#{name},</if>
+            <if test="checkCount!=null">check_count=#{checkCount},</if>
+            <if test="checkTimeNumber!=null">check_time_number=#{checkTimeNumber},</if>
+            <if test="checkTimeUnit!=null">check_time_unit=#{checkTimeUnit},</if>
+            <if test="punishNumber!=null">punish_number=#{punishNumber},</if>
+            <if test="punishUnit!=null">punish_unit=#{punishUnit},</if>
+            <if test="kickOut!=null">kick_out=#{kickOut},</if>
+            <if test="status!=null">status=#{status},</if>
+        </trim>
+        WHERE id=#{id}
+    </update>
+
+    <delete id="delete" parameterType="int">
+        DELETE FROM
+        security_rule
+        WHERE id=#{id}
+    </delete>
+
+</mapper>

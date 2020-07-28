@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ethereum.dao.DeviceInfoDao">
+
+    <resultMap id="DeviceInfoMap" type="DeviceInfo">
+        <id property="id" column="id"/>
+        <result property="deviceName" column="device_name"/>
+        <result property="deviceMac" column="device_mac"/>
+        <result property="deviceUid" column="device_uid"/>
+        <result property="deviceType" column="device_type"/>
+        <result property="manufacture" column="manufacture"/>
+        <result property="attributeType" column="attribute_type"/>
+        <result property="attributePosition" column="attribute_position"/>
+        <result property="attributeSystem" column="attribute_system"/>
+        <result property="agentDevice" column="agent_device"/>
+        <result property="agentAddress" column="agent_address"/>
+        <result property="status" column="status"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <sql id="selectField">
+        id ,
+        device_name,
+        device_mac,
+        device_uid,
+        device_type,
+        manufacture,
+        attribute_type,
+        attribute_position,
+        attribute_system,
+        agent_device,
+        status,
+        create_time,
+        update_time
+    </sql>
+
+    <sql id="insertColumn">
+        <trim suffixOverrides=",">
+            <if test="deviceName!=null">device_name,</if>
+            <if test="deviceMac!=null">device_mac,</if>
+            <if test="deviceUid!=null">device_uid,</if>
+            <if test="deviceType!=null">device_type,</if>
+            <if test="manufacture!=null">manufacture,</if>
+            <if test="attributeType!=null">attribute_type,</if>
+            <if test="attributePosition!=null">attribute_position,</if>
+            <if test="attributeSystem!=null">attribute_system,</if>
+            <if test="agentDevice!=null">agent_device,</if>
+            <if test="status!=null">status,</if>
+            <if test="createTime!=null">create_time,</if>
+            <if test="updateTime!=null">update_time,</if>
+        </trim>
+    </sql>
+    <sql id="insertValue">
+        <trim suffixOverrides=",">
+            <if test="deviceName!=null">#{deviceName},</if>
+            <if test="deviceMac!=null">#{deviceMac},</if>
+            <if test="deviceUid!=null">#{deviceUid},</if>
+            <if test="deviceType!=null">#{deviceType},</if>
+            <if test="manufacture!=null">#{manufacture},</if>
+            <if test="attributeType!=null">#{attributeType},</if>
+            <if test="attributePosition!=null">#{attributePosition},</if>
+            <if test="attributeSystem!=null">#{attributeSystem},</if>
+            <if test="agentDevice!=null">#{agentDevice},</if>
+            <if test="status!=null">#{status},</if>
+            <if test="createTime!=null">#{createTime},</if>
+            <if test="updateTime!=null">#{updateTime},</if>
+        </trim>
+    </sql>
+
+    <insert id="insert" parameterType="DeviceInfo">
+        INSERT INTO device_info
+        (<include refid="insertColumn"/>)
+        values
+        (<include refid="insertValue"/>)
+    </insert>
+
+    <select id="selectAll" resultMap="DeviceInfoMap">
+        SELECT dev.*,
+        agen.address as agent_address
+        FROM device_info as dev
+        LEFT JOIN agent_info as agen ON dev.agent_device=agen.device_uid
+        <where>
+            <if test="status !=null and ( status==0 or status==1 )">
+                status=#{status}
+            </if>
+        </where>
+        order by dev.id desc
+    </select>
+
+    <select id="selectFilter" parameterType="DeviceInfo" resultMap="DeviceInfoMap">
+        SELECT dev.*,
+        agen.address as agent_address
+        FROM device_info as dev
+        LEFT JOIN agent_info as agen ON dev.agent_device=agen.device_uid
+        <where>
+            <trim suffixOverrides="and">
+                <if test="id!=null">dev.id=#{id} and</if>
+                <if test="deviceName!=null">dev.device_name like ${deviceName} and</if>
+                <if test="deviceMac!=null">dev.device_mac like ${deviceMac} and</if>
+                <if test="deviceUid!=null">dev.device_uid like ${deviceUid} and</if>
+                <if test="manufacture!=null">dev.manufacture like ${manufacture} and</if>
+                <if test="deviceType!=null">dev.device_type=#{deviceType} and</if>
+                <if test="attributeType!=null">dev.attribute_type=#{attributeType} and</if>
+                <if test="attributePosition!=null">dev.attribute_position=#{attributePosition} and</if>
+                <if test="attributeSystem!=null">dev.attribute_system=#{attributeSystem} and</if>
+                <if test="status!=null">dev.status=#{status} and</if>
+            </trim>
+        </where>
+        order by dev.id desc
+    </select>
+
+    <select id="selectById" resultMap="DeviceInfoMap">
+        SELECT dev.*,
+        agen.address as agent_address
+        FROM device_info as dev
+        LEFT JOIN agent_info as agen ON dev.agent_device=agen.device_uid
+        where dev.id=#{id}
+    </select>
+
+    <select id="selectByName" resultMap="DeviceInfoMap">
+        SELECT dev.*,
+        agen.address as agent_address
+        FROM device_info as dev
+        LEFT JOIN agent_info as agen ON dev.agent_device=agen.device_uid
+        where dev.device_name=#{deviceName}
+    </select>
+
+    <select id="selectByMac" resultMap="DeviceInfoMap">
+        SELECT dev.*,
+        agen.address as agent_address
+        FROM device_info as dev
+        LEFT JOIN agent_info as agen ON dev.agent_device=agen.device_uid
+        where dev.device_mac=#{deviceMac}
+    </select>
+
+    <select id="selectByUid" resultMap="DeviceInfoMap">
+        SELECT dev.*,
+        agen.address as agent_address
+        FROM device_info as dev
+        LEFT JOIN agent_info as agen ON dev.agent_device=agen.device_uid
+        where dev.device_uid=#{deviceUid}
+    </select>
+
+    <update id="update" parameterType="DeviceInfo">
+        UPDATE device_info
+        SET
+        <trim suffixOverrides=",">
+            <if test="deviceName!=null">device_name=#{deviceName},</if>
+            <if test="deviceMac!=null">device_mac=#{deviceMac},</if>
+            <if test="deviceUid!=null">device_uid=#{deviceUid},</if>
+            <if test="deviceType!=null">device_type=#{deviceType},</if>
+            <if test="manufacture!=null">manufacture=#{manufacture},</if>
+            <if test="attributeType!=null">attribute_type=#{attributeType},</if>
+            <if test="attributePosition!=null">attribute_position=#{attributePosition},</if>
+            <if test="attributeSystem!=null">attribute_system=#{attributeSystem},</if>
+            <if test="agentDevice!=null">agent_device=#{agentDevice},</if>
+            <if test="status!=null">status=#{status},</if>
+        </trim>
+        WHERE id=#{id}
+    </update>
+
+    <update id="updateStatus">
+        UPDATE device_info
+        SET status=#{status}
+        WHERE device_uid=#{deviceUid}
+    </update>
+
+    <delete id="delete" parameterType="int">
+        DELETE FROM
+        device_info
+        WHERE id=#{id}
+    </delete>
+
+</mapper>

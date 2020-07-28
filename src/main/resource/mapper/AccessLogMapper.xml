@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ethereum.dao.AccessLogDao">
+
+    <resultMap id="AccessLogMap" type="AccessLog">
+        <id property="id" column="id"/>
+        <result property="subjectUid" column="subject_uid"/>
+        <result property="subjectName" column="subject_name"/>
+        <result property="objectUid" column="object_uid"/>
+        <result property="objectName" column="object_name"/>
+        <result property="operateType" column="operate_type"/>
+        <result property="operateData" column="operate_data"/>
+        <result property="accessAllow" column="access_allow"/>
+        <result property="failReason" column="fail_reason"/>
+        <result property="resultData" column="result_data"/>
+        <result property="requestTime" column="request_time"/>
+        <result property="responseTime" column="response_time"/>
+        <result property="status" column="status"/>
+    </resultMap>
+
+    <sql id="insertColumn">
+        <trim suffixOverrides=",">
+            <if test="subjectUid!=null">subject_uid,</if>
+            <if test="objectUid!=null">object_uid,</if>
+            <if test="operateType!=null">operate_type,</if>
+            <if test="operateData!=null">operate_data,</if>
+            <if test="accessAllow!=null">access_allow,</if>
+            <if test="failReason!=null">fail_reason,</if>
+            <if test="resultData!=null">result_data,</if>
+            <if test="requestTime!=null">request_time,</if>
+            <if test="responseTime!=null">response_time,</if>
+        </trim>
+    </sql>
+    <sql id="insertValue">
+        <trim suffixOverrides=",">
+            <if test="subjectUid!=null">#{subjectUid},</if>
+            <if test="objectUid!=null">#{objectUid},</if>
+            <if test="operateType!=null">#{operateType},</if>
+            <if test="operateData!=null">#{operateData},</if>
+            <if test="accessAllow!=null">#{accessAllow},</if>
+            <if test="failReason!=null">#{failReason},</if>
+            <if test="resultData!=null">#{resultData},</if>
+            <if test="requestTime!=null">#{requestTime},</if>
+            <if test="responseTime!=null">#{responseTime},</if>
+        </trim>
+    </sql>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id" keyColumn="id" parameterType="AccessLog">
+        INSERT INTO access_log
+        (<include refid="insertColumn"/>)
+        values
+        (<include refid="insertValue"/>)
+    </insert>
+
+    <select id="selectAll" resultMap="AccessLogMap">
+        SELECT
+        access.*,
+        device.device_name as subject_name
+        FROM access_log as access
+        LEFT JOIN device_info as device on access.subject_uid=device.device_uid
+        <where>
+            <if test="status !=null and ( status==0 or status==1 )">
+                access.status=#{status}
+            </if>
+        </where>
+        order by access.id desc
+    </select>
+
+    <select id="selectIllegalAccess" resultMap="AccessLogMap">
+        SELECT
+        access_log.*
+        FROM access_log
+        where
+        subject_uid=#{deviceUid}
+        and fail_reason=#{failReason}
+        and status=1
+    </select>
+
+    <select id="selectAccessCount" resultMap="AccessLogMap">
+        SELECT
+        access_log.*
+        FROM access_log
+        where
+        subject_uid=#{deviceUid}
+        and status=1
+    </select>
+
+    <select id="selectFilter" parameterType="AccessLog" resultMap="AccessLogMap">
+        SELECT
+        access.*,
+        device.device_name as subject_name
+        FROM access_log as access
+        LEFT JOIN device_info as device on access.subject_uid=device.device_uid
+        <where>
+            <trim suffixOverrides="and">
+                <if test="id!=null">access.id=#{id} and</if>
+                <if test="subjectUid!=null">access.subject_uid like ${subjectUid} and</if>
+                <if test="subjectName!=null">device.device_name like ${subjectName} and</if>
+                <if test="objectUid!=null">access.object_uid like ${objectUid} and</if>
+                <if test="operateType!=null">access.operate_type = #{operateType} and</if>
+                <if test="failReason!=null">access.fail_reason = ${failReason} and</if>
+                <if test="accessAllow!=null">access.access_allow = #{accessAllow} and</if>
+            </trim>
+        </where>
+        order by access.id desc
+    </select>
+
+    <select id="selectById" resultMap="AccessLogMap">
+        SELECT
+        access.*,
+        device.device_name as subject_name
+        FROM access_log as access
+        LEFT JOIN device_info as device on access.subject_uid=device.device_uid
+        where access.id=#{id}
+    </select>
+
+    <update id="update" parameterType="AccessLog">
+        UPDATE access_log
+        SET
+        <trim suffixOverrides=",">
+            <if test="subjectUid!=null">subject_uid=#{subjectUid},</if>
+            <if test="objectUid!=null">object_uid=#{objectUid},</if>
+            <if test="operateType!=null">operate_type=#{operateType},</if>
+            <if test="operateData!=null">operate_data=#{operateData},</if>
+            <if test="accessAllow!=null">access_allow=#{accessAllow},</if>
+            <if test="failReason!=null">fail_reason=#{failReason},</if>
+            <if test="resultData!=null">result_data=#{resultData},</if>
+            <if test="requestTime!=null">request_time=#{requestTime},</if>
+            <if test="responseTime!=null">response_time=#{responseTime},</if>
+        </trim>
+        WHERE id=#{id}
+    </update>
+
+    <update id="updateStatus" >
+        UPDATE access_log
+        SET status=#{status}
+        WHERE subject_uid=#{deviceUid}
+    </update>
+
+    <delete id="delete" parameterType="int">
+        DELETE FROM
+        access_log
+        WHERE id=#{id}
+    </delete>
+
+</mapper>
